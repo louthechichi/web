@@ -20,6 +20,22 @@
         .counter {
             font-size: 2rem;
         }
+        #popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            color: black;
+            padding: 20px;
+            border: 1px solid black;
+            z-index: 1000;
+        }
+        #panel {
+            display: none;
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
@@ -27,10 +43,29 @@
     <p class="counter">Score: <span id="score">0</span></p>
     <div id="ghost" class="ghost">👻</div>
 
+    <button id="x-button">X</button>
+
+    <div id="popup">
+        <p>Enter Password:</p>
+        <input type="password" id="password">
+        <button id="submit-password">Submit</button>
+    </div>
+
+    <div id="panel">
+        <button id="auto-click-ghost">Auto-click Ghost</button>
+    </div>
+
     <script>
         let score = 0;
         const ghost = document.getElementById('ghost');
         const scoreDisplay = document.getElementById('score');
+        const xButton = document.getElementById('x-button');
+        const popup = document.getElementById('popup');
+        const passwordInput = document.getElementById('password');
+        const submitPasswordButton = document.getElementById('submit-password');
+        const panel = document.getElementById('panel');
+        const autoClickGhostButton = document.getElementById('auto-click-ghost');
+        const correctPassword = 'spooky123';
 
         function randomPosition() {
             const x = Math.floor(Math.random() * (window.innerWidth - 50));
@@ -48,6 +83,23 @@
             score++;
             scoreDisplay.textContent = score;
             moveGhost();
+        });
+
+        xButton.addEventListener('click', () => {
+            popup.style.display = 'block';
+        });
+
+        submitPasswordButton.addEventListener('click', () => {
+            if (passwordInput.value === correctPassword) {
+                popup.style.display = 'none';
+                panel.style.display = 'block';
+            } else {
+                alert('Incorrect password!');
+            }
+        });
+
+        autoClickGhostButton.addEventListener('click', () => {
+            ghost.click();
         });
 
         moveGhost();
