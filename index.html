@@ -16,7 +16,7 @@
             width: 50px;
             height: 50px;
             font-size: 2rem;
-            transition: transform 0.5s ease;
+            cursor: pointer;
         }
         .counter {
             font-size: 2rem;
@@ -103,36 +103,19 @@
             const ghost = document.createElement('div');
             ghost.className = 'ghost';
             ghost.innerHTML = '👻';
-            ghost.style.left = '0px';
-            ghost.style.top = '0px';
-            ghost.dataset.dx = Math.random() < 0.5 ? -1 : 1;
-            ghost.dataset.dy = Math.random() < 0.5 ? -1 : 1;
+            ghost.style.left = `${Math.random() * (window.innerWidth - 50)}px`;
+            ghost.style.top = `${Math.random() * (window.innerHeight - 50)}px`;
             ghostContainer.appendChild(ghost);
-            moveGhost(ghost);
+            ghost.addEventListener('click', ghostClicked);
         }
 
-        function moveGhost(ghost) {
-            let x = parseInt(ghost.style.left);
-            let y = parseInt(ghost.style.top);
-            let dx = parseInt(ghost.dataset.dx);
-            let dy = parseInt(ghost.dataset.dy);
-
-            x += dx * 5;
-            y += dy * 5;
-
-            if (x <= 0 || x >= window.innerWidth - 50) {
-                dx *= -1;
-            }
-            if (y <= 0 || y >= window.innerHeight - 50) {
-                dy *= -1;
-            }
-
-            ghost.style.left = `${x}px`;
-            ghost.style.top = `${y}px`;
-            ghost.dataset.dx = dx;
-            ghost.dataset.dy = dy;
-
-            requestAnimationFrame(() => moveGhost(ghost));
+        function ghostClicked(event) {
+            const ghost = event.target;
+            score++;
+            scoreDisplay.textContent = score;
+            ghost.style.left = `${Math.random() * (window.innerWidth - 50)}px`;
+            ghost.style.top = `${Math.random() * (window.innerHeight - 50)}px`;
+            addGhost();
         }
 
         function addGhost() {
@@ -143,14 +126,6 @@
         }
 
         createGhost();
-
-        ghostContainer.addEventListener('click', (event) => {
-            if (event.target.classList.contains('ghost')) {
-                score++;
-                scoreDisplay.textContent = score;
-                addGhost();
-            }
-        });
 
         document.addEventListener('keydown', (event) => {
             if (event.key === 'x' || event.key === 'X') {
