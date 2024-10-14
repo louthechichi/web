@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Haunted Game</title>
+    <title>Lou Clicker</title>
+    <link rel="icon" href="icon.png" type="image/png">
     <style>
         body {
             text-align: center;
@@ -16,7 +17,6 @@
             position: absolute;
             width: 50px;
             height: 50px;
-            font-size: 2rem;
             cursor: pointer;
             user-select: none;
         }
@@ -95,7 +95,7 @@
     </style>
 </head>
 <body>
-    <h1>Click the Ghost!</h1>
+    <h1>Click Lou!</h1>
     <p class="counter">Score: <span id="score">0</span></p>
     <div id="ghost-container"></div>
 
@@ -149,9 +149,9 @@
         let ghostCount = 1;
 
         function createGhost() {
-            const ghost = document.createElement('div');
+            const ghost = document.createElement('img');
             ghost.className = 'ghost';
-            ghost.innerHTML = '👻';
+            ghost.src = 'lou.png';
             ghost.style.left = `${Math.random() * (window.innerWidth - 50)}px`;
             ghost.style.top = `${Math.random() * (window.innerHeight - 50)}px`;
             ghostContainer.appendChild(ghost);
