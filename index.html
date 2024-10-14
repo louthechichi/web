@@ -120,7 +120,7 @@
                 <option value="logs">logs</option>
             </select>
             <input type="number" id="hack-amount" placeholder="Enter amount to hack...">
-            <input type="number" id="auto-click-interval" placeholder="Enter interval in seconds...">
+            <input type="number" id="auto-click-interval" placeholder="Enter interval in milliseconds...">
             <div>> <input type="text" id="command-input" placeholder="Enter command..."></div>
             <button id="execute-command">Execute</button>
             <div id="command-output"></div>
@@ -181,6 +181,8 @@
             lou.className = 'lou';
             lou.src = 'biglou.png';
             const titleHeight = document.querySelector('h1').offsetHeight;
+
+
             lou.style.left = `${Math.random() * (window.innerWidth - 200)}px`;
             lou.style.top = `${Math.random() * (window.innerHeight - 200 - titleHeight) + titleHeight}px`;
             lou.style.width = '200px';
@@ -220,7 +222,9 @@
                 createLou();
                 ghostCount++;
             }
+
         }
+
         createGhost();
 
         document.addEventListener('keydown', (event) => {
