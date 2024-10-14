@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lou Clicker</title>
-    <link rel="icon" href="icon.png" type="image/png">
+    <link rel="icon" href="icon.ico" type="image/x-icon">
     <style>
         body {
             text-align: center;
@@ -152,8 +152,9 @@
             const ghost = document.createElement('img');
             ghost.className = 'ghost';
             ghost.src = 'lou.png';
+            const titleHeight = document.querySelector('h1').offsetHeight;
             ghost.style.left = `${Math.random() * (window.innerWidth - 50)}px`;
-            ghost.style.top = `${Math.random() * (window.innerHeight - 50)}px`;
+            ghost.style.top = `${Math.random() * (window.innerHeight - 50 - titleHeight) + titleHeight}px`;
             ghostContainer.appendChild(ghost);
             ghost.addEventListener('click', ghostClicked);
         }
@@ -162,8 +163,9 @@
             const ghost = event.target;
             score++;
             scoreDisplay.textContent = score;
+            const titleHeight = document.querySelector('h1').offsetHeight;
             ghost.style.left = `${Math.random() * (window.innerWidth - 50)}px`;
-            ghost.style.top = `${Math.random() * (window.innerHeight - 50)}px`;
+            ghost.style.top = `${Math.random() * (window.innerHeight - 50 - titleHeight) + titleHeight}px`;
             addGhost();
         }
 
