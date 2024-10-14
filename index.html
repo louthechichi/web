@@ -10,6 +10,7 @@
             background-color: black;
             color: white;
             font-family: 'Courier New', monospace;
+            user-select: none;
         }
         .ghost {
             position: absolute;
@@ -17,6 +18,7 @@
             height: 50px;
             font-size: 2rem;
             cursor: pointer;
+            user-select: none;
         }
         .counter {
             font-size: 2rem;
@@ -39,11 +41,11 @@
             top: 20px;
             left: 20px;
             width: 400px;
-            background-color: #0f0f0f;
+            background-color: #000;
             color: #00ff00;
             padding: 20px;
-            border: 1px solid #00ff00;
-            box-shadow: 0 0 10px rgba(0,255,0,0.5);
+            border: 2px solid #00ff00;
+            box-shadow: 0 0 20px rgba(0,255,0,0.7);
             cursor: move;
             font-family: 'Courier New', monospace;
         }
@@ -51,10 +53,11 @@
             border-bottom: 1px solid #00ff00;
             padding-bottom: 10px;
             margin-bottom: 10px;
+            font-weight: bold;
         }
         #command-input {
             width: 100%;
-            background-color: #0f0f0f;
+            background-color: #000;
             color: #00ff00;
             border: none;
             outline: none;
@@ -63,11 +66,8 @@
         #command-output {
             margin-top: 10px;
             white-space: pre-wrap;
-        }
-        #online-admins {
-            margin-top: 10px;
-            border-top: 1px solid #00ff00;
-            padding-top: 10px;
+            max-height: 200px;
+            overflow-y: auto;
         }
     </style>
 </head>
@@ -85,15 +85,11 @@
 
     <div id="panel">
         <div id="panel-header">
-            Available commands: start-auto-click, stop-auto-click, close-panel
+            HACKER TERMINAL
         </div>
         <div id="command-area">
             <div>> <input type="text" id="command-input" placeholder="Enter command..."></div>
             <div id="command-output"></div>
-        </div>
-        <div id="online-admins">
-            <h3>Online Admins</h3>
-            <ul id="admin-list"></ul>
         </div>
     </div>
 
@@ -109,10 +105,8 @@
         const panel = document.getElementById('panel');
         const commandInput = document.getElementById('command-input');
         const commandOutput = document.getElementById('command-output');
-        const adminList = document.getElementById('admin-list');
         const correctPassword = 'spooky123';
         let ghostCount = 1;
-        let adminName = '';
 
         function createGhost() {
             const ghost = document.createElement('div');
@@ -154,14 +148,8 @@
 
         submitPasswordButton.addEventListener('click', () => {
             if (passwordInput.value === correctPassword) {
-                adminName = prompt('Enter your admin name:');
-                if (adminName) {
-                    popup.style.display = 'none';
-                    panel.style.display = 'block';
-                    const adminItem = document.createElement('li');
-                    adminItem.textContent = adminName;
-                    adminList.appendChild(adminItem);
-                }
+                popup.style.display = 'none';
+                panel.style.display = 'block';
             } else {
                 alert('Incorrect password!');
             }
@@ -216,12 +204,7 @@
 
         function closePanel() {
             panel.style.display = 'none';
-            const adminItem = Array.from(adminList.children).find(item => item.textContent === adminName);
-            if (adminItem) {
-                adminList.removeChild(adminItem);
-            }
-            adminName = '';
-            commandOutput.textContent += '\n> close-panel\nClosing admin panel...';
+            commandOutput.textContent += '\n> close-panel\nClosing hacker terminal...';
         }
 
         // Make the panel draggable
