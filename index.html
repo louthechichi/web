@@ -257,11 +257,10 @@
             commandOutput.textContent += `\n> hackclicks\nAdded ${clicksToAdd} clicks to your score.`;
             
             // Add ghosts for the amount of clicks hacked in
-            for (let i = 0; i < clicksToAdd; i++) {
-                if (score % 20 === 0) {
-                    createGhost();
-                    ghostCount++;
-                }
+            const ghostsToAdd = Math.floor(clicksToAdd / 20);
+            for (let i = 0; i < ghostsToAdd; i++) {
+                createGhost();
+                ghostCount++;
             }
             hackAmountInput.value = '';
         }
