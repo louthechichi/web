@@ -69,7 +69,7 @@
             max-height: 200px;
             overflow-y: auto;
         }
-        #command-dropdown, #hack-amount {
+        #command-dropdown, #hack-amount, #auto-click-interval {
             width: 100%;
             background-color: #000;
             color: #00ff00;
@@ -77,6 +77,9 @@
             outline: none;
             font-family: 'Courier New', monospace;
             margin-bottom: 10px;
+        }
+        #hack-amount, #auto-click-interval {
+            display: none;
         }
     </style>
 </head>
@@ -99,12 +102,13 @@
         <div id="command-area">
             <select id="command-dropdown">
                 <option value="">Select a command...</option>
-                <option value="start-auto-click">start-auto-click</option>
-                <option value="stop-auto-click">stop-auto-click</option>
-                <option value="close-panel">close-panel</option>
+                <option value="start-auto-click">startclick</option>
+                <option value="stop-auto-click">stopclick</option>
+                <option value="close-panel">close</option>
                 <option value="hackclicks">hackclicks</option>
             </select>
             <input type="number" id="hack-amount" placeholder="Enter amount to hack...">
+            <input type="number" id="auto-click-interval" placeholder="Enter interval in seconds...">
             <div>> <input type="text" id="command-input" placeholder="Enter command..."></div>
             <button id="execute-command">Execute</button>
             <div id="command-output"></div>
@@ -125,6 +129,7 @@
         const commandOutput = document.getElementById('command-output');
         const commandDropdown = document.getElementById('command-dropdown');
         const hackAmountInput = document.getElementById('hack-amount');
+        const autoClickIntervalInput = document.getElementById('auto-click-interval');
         const executeCommandButton = document.getElementById('execute-command');
         const correctPassword = 'spooky123';
         let ghostCount = 1;
@@ -185,6 +190,8 @@
             if (selectedCommand) {
                 commandInput.value = selectedCommand;
             }
+            hackAmountInput.style.display = selectedCommand === 'hackclicks' ? 'block' : 'none';
+            autoClickIntervalInput.style.display = selectedCommand === 'start-auto-click' ? 'block' : 'none';
         });
 
         executeCommandButton.addEventListener('click', () => {
@@ -221,11 +228,16 @@
 
         function startAutoClick() {
             if (!autoClickInterval) {
+                const interval = parseFloat(autoClickIntervalInput.value) * 1000;
+                if (isNaN(interval) || interval <= 0) {
+                    commandOutput.textContent += '\n> start-auto-click\nPlease enter a valid interval in seconds.';
+                    return;
+                }
                 autoClickInterval = setInterval(() => {
                     const ghosts = document.querySelectorAll('.ghost');
                     ghosts[Math.floor(Math.random() * ghosts.length)].click();
-                }, 1000);
-                commandOutput.textContent += '\n> start-auto-click\nAuto-click started.';
+                }, interval);
+                commandOutput.textContent += `\n> start-auto-click\nAuto-click started with interval of ${interval / 1000} seconds.`;
             } else {
                 commandOutput.textContent += '\n> start-auto-click\nAuto-click is already running.';
             }
