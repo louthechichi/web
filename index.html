@@ -10,6 +10,7 @@
             background-color: black;
             color: white;
             font-family: Arial, sans-serif;
+            overflow: hidden;
         }
         .ghost {
             position: absolute;
@@ -35,18 +36,37 @@
         }
         #panel {
             display: none;
-            margin-top: 20px;
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            width: 300px;
             background-color: white;
             color: black;
             padding: 20px;
             border: 1px solid black;
+            z-index: 1000;
+        }
+        #admin-header {
+            display: flex;
+            justify-content: space-between;
+        }
+        #online-admins, #buttons {
+            cursor: pointer;
+            color: blue;
+            text-decoration: underline;
+        }
+        #draggable {
+            cursor: move;
+            background-color: #f1f1f1;
+            border: 1px solid #d3d3d3;
+            z-index: 10;
         }
     </style>
 </head>
 <body>
     <h1>Click the Ghost!</h1>
     <p class="counter">Score: <span id="score">0</span></p>
-    <div id="ghost" class="ghost">👻</div>
+    <div id="ghosts-container"></div>
 
     <div id="popup">
         <p>Enter Password:</p>
@@ -56,6 +76,23 @@
     </div>
 
     <div id="panel">
+        <div id="draggable">
+            <div id="admin-header">
+                <div id="online-admins">Online Admins</div>
+                <div id="buttons">Buttons</div>
+            </div>
+            <div id="admin-content">
+                <div id="enter-name-section">
+                    <p>Enter your name:</p>
+                    <input type="text" id="admin-name">
+                    <button id="submit-name">Submit</button>
+                </div>
+                <div id="online-admins-section" style="display:none;">
+                    <p>Online Admins:</p>
+                    <ul id="admins-list"></ul>
+                </div>
+            </div>
+        </div>
         <button id="auto-click-ghost">Start Auto-click Ghost</button>
         <button id="stop-auto-click">Stop Auto-click</button>
         <button id="close-panel">Close Panel</button>
@@ -64,73 +101,103 @@
     <script>
         let score = 0;
         let autoClickInterval;
-        const ghost = document.getElementById('ghost');
+        const ghostsContainer = document.getElementById('ghosts-container');
         const scoreDisplay = document.getElementById('score');
         const popup = document.getElementById('popup');
         const passwordInput = document.getElementById('password');
         const submitPasswordButton = document.getElementById('submit-password');
         const closePopupButton = document.getElementById('close-popup');
         const panel = document.getElementById('panel');
+        const adminNameInput = document.getElementById('admin-name');
+        const submitNameButton = document.getElementById('submit-name');
+        const onlineAdminsButton = document.getElementById('online-admins');
+        const onlineAdminsSection = document.getElementById('online-admins-section');
+        const adminsList = document.getElementById('admins-list');
+        const buttonsButton = document.getElementById('buttons');
         const autoClickGhostButton = document.getElementById('auto-click-ghost');
         const stopAutoClickButton = document.getElementById('stop-auto-click');
         const closePanelButton = document.getElementById('close-panel');
         const correctPassword = 'spooky123';
+        const speed = 5;
+        let adminName = '';
 
-        function randomPosition() {
-            const x = Math.floor(Math.random() * (window.innerWidth - 50));
-            const y = Math.floor(Math.random() * (window.innerHeight - 50));
-            return [x, y];
+        function createGhost() {
+            const ghost = document.createElement('div');
+            ghost.classList.add('ghost');
+            ghost.textContent = '👻';
+            ghost.style.left = `${Math.floor(Math.random() * (window.innerWidth - 50))}px`;
+            ghost.style.top = `${Math.floor(Math.random() * (window.innerHeight - 50))}px`;
+            ghost.dataset.vx = speed;
+            ghost.dataset.vy = speed;
+
+            ghost.addEventListener('click', () => {
+                score++;
+                scoreDisplay.textContent = score;
+                if (score % 20 === 0) {
+                    createGhost();
+                }
+            });
+
+            ghostsContainer.appendChild(ghost);
         }
 
-        function moveGhost() {
-            const [x, y] = randomPosition();
-            ghost.style.transform = `translate(${x}px, ${y}px)`;
+        function moveGhosts() {
+            const ghosts = document.querySelectorAll('.ghost');
+            ghosts.forEach(ghost => {
+                let x = parseInt(ghost.style.left);
+                let y = parseInt(ghost.style.top);
+                let vx = parseInt(ghost.dataset.vx);
+                let vy = parseInt(ghost.dataset.vy);
+
+                if (x + 50 >= window.innerWidth || x <= 0) vx = -vx;
+                if (y + 50 >= window.innerHeight || y <= 0) vy = -vy;
+
+                ghost.style.left = `${x + vx}px`;
+                ghost.style.top = `${y + vy}px`;
+                ghost.dataset.vx = vx;
+                ghost.dataset.vy = vy;
+            });
         }
 
-        ghost.addEventListener('click', () => {
-            score++;
-            scoreDisplay.textContent = score;
-            moveGhost();
-        });
+        function dragElement(elmnt) {
+            var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+            elmnt.onmousedown = dragMouseDown;
+
+            function dragMouseDown(e) {
+                e = e || window.event;
+                e.preventDefault();
+                pos3 = e.clientX;
+                pos4 = e.clientY;
+                document.onmouseup = closeDragElement;
+                document.onmousemove = elementDrag;
+            }
+
+            function elementDrag(e) {
+                e = e || window.event;
+                e.preventDefault();
+                pos1 = pos3 - e.clientX;
+                pos2 = pos4 - e.clientY;
+                pos3 = e.clientX;
+                pos4 = e.clientY;
+                elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
+                elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
+            }
+
+            function closeDragElement() {
+                document.onmouseup = null;
+                document.onmousemove = null;
+            }
+        }
 
         document.addEventListener('keydown', (event) => {
             if (event.key === 'x' || event.key === 'X') {
-                if (popup.style.display === 'none') {
-                    popup.style.display = 'block';
-                } else {
-                    popup.style.display = 'none';
-                }
+                popup.style.display = popup.style.display === 'none' ? 'block' : 'none';
             }
         });
 
         submitPasswordButton.addEventListener('click', () => {
-            if (passwordInput.value === correctPassword) {
-                popup.style.display = 'none';
-                panel.style.display = 'block';
-            } else {
-                alert('Incorrect password!');
-            }
+            // Add closing curly brace here
         });
-
-        closePopupButton.addEventListener('click', () => {
-            popup.style.display = 'none';
-        });
-
-        autoClickGhostButton.addEventListener('click', () => {
-            autoClickInterval = setInterval(() => {
-                ghost.click();
-            }, 1000);
-        });
-
-        stopAutoClickButton.addEventListener('click', () => {
-            clearInterval(autoClickInterval);
-        });
-
-        closePanelButton.addEventListener('click', () => {
-            panel.style.display = 'none';
-        });
-
-        moveGhost();
     </script>
 </body>
 </html>
