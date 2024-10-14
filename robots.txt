@@ -1,0 +1,6 @@
+User-agent: *
+Disallow: /page-not-found
+Disallow: /server-error
+Disallow: /admin
+
+Sitemap: https://localthingstodo.co.uk/sitemap.xml
