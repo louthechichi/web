@@ -9,7 +9,7 @@
             text-align: center;
             background-color: black;
             color: white;
-            font-family: Arial, sans-serif;
+            font-family: 'Courier New', monospace;
         }
         .ghost {
             position: absolute;
@@ -27,10 +27,10 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background-color: white;
-            color: black;
+            background-color: #0f0f0f;
+            color: #00ff00;
             padding: 20px;
-            border: 1px solid black;
+            border: 1px solid #00ff00;
             z-index: 1000;
         }
         #panel {
@@ -38,21 +38,35 @@
             position: absolute;
             top: 20px;
             left: 20px;
-            width: 300px;
-            background-color: #f0f0f0;
-            color: black;
+            width: 400px;
+            background-color: #0f0f0f;
+            color: #00ff00;
             padding: 20px;
-            border: 1px solid black;
-            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+            border: 1px solid #00ff00;
+            box-shadow: 0 0 10px rgba(0,255,0,0.5);
             cursor: move;
+            font-family: 'Courier New', monospace;
         }
-        #panel button {
-            margin: 5px;
-            padding: 5px 10px;
+        #panel-header {
+            border-bottom: 1px solid #00ff00;
+            padding-bottom: 10px;
+            margin-bottom: 10px;
+        }
+        #command-input {
+            width: 100%;
+            background-color: #0f0f0f;
+            color: #00ff00;
+            border: none;
+            outline: none;
+            font-family: 'Courier New', monospace;
+        }
+        #command-output {
+            margin-top: 10px;
+            white-space: pre-wrap;
         }
         #online-admins {
             margin-top: 10px;
-            border-top: 1px solid #ccc;
+            border-top: 1px solid #00ff00;
             padding-top: 10px;
         }
     </style>
@@ -71,9 +85,11 @@
 
     <div id="panel">
         <div id="panel-header">
-            <button id="auto-click-ghost">Start Auto-click Ghost</button>
-            <button id="stop-auto-click">Stop Auto-click</button>
-            <button id="close-panel">Close</button>
+            Available commands: start-auto-click, stop-auto-click, close-panel
+        </div>
+        <div id="command-area">
+            <div>> <input type="text" id="command-input" placeholder="Enter command..."></div>
+            <div id="command-output"></div>
         </div>
         <div id="online-admins">
             <h3>Online Admins</h3>
@@ -91,9 +107,8 @@
         const submitPasswordButton = document.getElementById('submit-password');
         const closePopupButton = document.getElementById('close-popup');
         const panel = document.getElementById('panel');
-        const autoClickGhostButton = document.getElementById('auto-click-ghost');
-        const stopAutoClickButton = document.getElementById('stop-auto-click');
-        const closePanelButton = document.getElementById('close-panel');
+        const commandInput = document.getElementById('command-input');
+        const commandOutput = document.getElementById('command-output');
         const adminList = document.getElementById('admin-list');
         const correctPassword = 'spooky123';
         let ghostCount = 1;
@@ -156,25 +171,58 @@
             popup.style.display = 'none';
         });
 
-        autoClickGhostButton.addEventListener('click', () => {
-            autoClickInterval = setInterval(() => {
-                const ghosts = document.querySelectorAll('.ghost');
-                ghosts[Math.floor(Math.random() * ghosts.length)].click();
-            }, 1000);
+        commandInput.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter') {
+                const command = commandInput.value.trim().toLowerCase();
+                commandInput.value = '';
+                
+                switch (command) {
+                    case 'start-auto-click':
+                        startAutoClick();
+                        break;
+                    case 'stop-auto-click':
+                        stopAutoClick();
+                        break;
+                    case 'close-panel':
+                        closePanel();
+                        break;
+                    default:
+                        commandOutput.textContent += `\n> ${command}\nUnknown command. Available commands: start-auto-click, stop-auto-click, close-panel`;
+                }
+            }
         });
 
-        stopAutoClickButton.addEventListener('click', () => {
-            clearInterval(autoClickInterval);
-        });
+        function startAutoClick() {
+            if (!autoClickInterval) {
+                autoClickInterval = setInterval(() => {
+                    const ghosts = document.querySelectorAll('.ghost');
+                    ghosts[Math.floor(Math.random() * ghosts.length)].click();
+                }, 1000);
+                commandOutput.textContent += '\n> start-auto-click\nAuto-click started.';
+            } else {
+                commandOutput.textContent += '\n> start-auto-click\nAuto-click is already running.';
+            }
+        }
 
-        closePanelButton.addEventListener('click', () => {
+        function stopAutoClick() {
+            if (autoClickInterval) {
+                clearInterval(autoClickInterval);
+                autoClickInterval = null;
+                commandOutput.textContent += '\n> stop-auto-click\nAuto-click stopped.';
+            } else {
+                commandOutput.textContent += '\n> stop-auto-click\nAuto-click is not running.';
+            }
+        }
+
+        function closePanel() {
             panel.style.display = 'none';
             const adminItem = Array.from(adminList.children).find(item => item.textContent === adminName);
             if (adminItem) {
                 adminList.removeChild(adminItem);
             }
             adminName = '';
-        });
+            commandOutput.textContent += '\n> close-panel\nClosing admin panel...';
+        }
 
         // Make the panel draggable
         let isDragging = false;
