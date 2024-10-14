@@ -106,6 +106,7 @@
             </select>
             <input type="number" id="hack-amount" placeholder="Enter amount to hack...">
             <div>> <input type="text" id="command-input" placeholder="Enter command..."></div>
+            <button id="execute-command">Execute</button>
             <div id="command-output"></div>
         </div>
     </div>
@@ -124,6 +125,7 @@
         const commandOutput = document.getElementById('command-output');
         const commandDropdown = document.getElementById('command-dropdown');
         const hackAmountInput = document.getElementById('hack-amount');
+        const executeCommandButton = document.getElementById('execute-command');
         const correctPassword = 'spooky123';
         let ghostCount = 1;
 
@@ -182,14 +184,17 @@
             const selectedCommand = event.target.value;
             if (selectedCommand) {
                 commandInput.value = selectedCommand;
-                executeCommand(selectedCommand);
             }
+        });
+
+        executeCommandButton.addEventListener('click', () => {
+            const command = commandInput.value.trim().toLowerCase();
+            executeCommand(command);
         });
 
         commandInput.addEventListener('keydown', (event) => {
             if (event.key === 'Enter') {
                 const command = commandInput.value.trim().toLowerCase();
-                commandInput.value = '';
                 executeCommand(command);
             }
         });
@@ -211,6 +216,7 @@
                 default:
                     commandOutput.textContent += `\n> ${command}\nUnknown command. Available commands: start-auto-click, stop-auto-click, close-panel, hackclicks`;
             }
+            commandInput.value = '';
         }
 
         function startAutoClick() {
@@ -241,7 +247,11 @@
         }
 
         function hackClicks() {
-            const clicksToAdd = parseInt(hackAmountInput.value) || 1000;
+            const clicksToAdd = parseInt(hackAmountInput.value);
+            if (isNaN(clicksToAdd) || clicksToAdd <= 0) {
+                commandOutput.textContent += '\n> hackclicks\nPlease enter a valid amount to hack.';
+                return;
+            }
             score += clicksToAdd;
             scoreDisplay.textContent = score;
             commandOutput.textContent += `\n> hackclicks\nAdded ${clicksToAdd} clicks to your score.`;
@@ -253,6 +263,7 @@
                     ghostCount++;
                 }
             }
+            hackAmountInput.value = '';
         }
 
         // Make the panel draggable
