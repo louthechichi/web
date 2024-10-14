@@ -69,7 +69,7 @@
             max-height: 200px;
             overflow-y: auto;
         }
-        #command-dropdown {
+        #command-dropdown, #hack-amount {
             width: 100%;
             background-color: #000;
             color: #00ff00;
@@ -104,6 +104,7 @@
                 <option value="close-panel">close-panel</option>
                 <option value="hackclicks">hackclicks</option>
             </select>
+            <input type="number" id="hack-amount" placeholder="Enter amount to hack...">
             <div>> <input type="text" id="command-input" placeholder="Enter command..."></div>
             <div id="command-output"></div>
         </div>
@@ -122,6 +123,7 @@
         const commandInput = document.getElementById('command-input');
         const commandOutput = document.getElementById('command-output');
         const commandDropdown = document.getElementById('command-dropdown');
+        const hackAmountInput = document.getElementById('hack-amount');
         const correctPassword = 'spooky123';
         let ghostCount = 1;
 
@@ -239,10 +241,18 @@
         }
 
         function hackClicks() {
-            const clicksToAdd = 1000;
+            const clicksToAdd = parseInt(hackAmountInput.value) || 1000;
             score += clicksToAdd;
             scoreDisplay.textContent = score;
             commandOutput.textContent += `\n> hackclicks\nAdded ${clicksToAdd} clicks to your score.`;
+            
+            // Add ghosts for the amount of clicks hacked in
+            for (let i = 0; i < clicksToAdd; i++) {
+                if (score % 20 === 0) {
+                    createGhost();
+                    ghostCount++;
+                }
+            }
         }
 
         // Make the panel draggable
