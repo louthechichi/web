@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Haunted Game</title>
+    <style>
+        body {
+            text-align: center;
+            background-color: black;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+        .ghost {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            background-image: url('ghost.png'); /* Ensure you have a ghost image named 'ghost.png' */
+            background-size: cover;
+        }
+        .counter {
+            font-size: 2rem;
+        }
+    </style>
+</head>
+<body>
+    <h1>Click the Ghost!</h1>
+    <p class="counter">Score: <span id="score">0</span></p>
+    <div id="ghost" class="ghost"></div>
+
+    <script>
+        let score = 0;
+        const ghost = document.getElementById('ghost');
+        const scoreDisplay = document.getElementById('score');
+
+        function randomPosition() {
+            const x = Math.floor(Math.random() * (window.innerWidth - 50));
+            const y = Math.floor(Math.random() * (window.innerHeight - 50));
+            return [x, y];
+        }
+
+        function moveGhost() {
+            const [x, y] = randomPosition();
+            ghost.style.left = x + 'px';
+            ghost.style.top = y + 'px';
+        }
+
+        ghost.addEventListener('click', () => {
+            score++;
+            scoreDisplay.textContent = score;
+            moveGhost();
+        });
+
+        moveGhost();
+    </script>
+</body>
+</html>
