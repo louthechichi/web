@@ -16,6 +16,7 @@
             width: 50px;
             height: 50px;
             font-size: 2rem;
+            transition: transform 0.5s ease;
         }
         .counter {
             font-size: 2rem;
@@ -35,6 +36,10 @@
         #panel {
             display: none;
             margin-top: 20px;
+            background-color: white;
+            color: black;
+            padding: 20px;
+            border: 1px solid black;
         }
     </style>
 </head>
@@ -43,28 +48,32 @@
     <p class="counter">Score: <span id="score">0</span></p>
     <div id="ghost" class="ghost">👻</div>
 
-    <button id="x-button">X</button>
-
     <div id="popup">
         <p>Enter Password:</p>
         <input type="password" id="password">
         <button id="submit-password">Submit</button>
+        <button id="close-popup">Close</button>
     </div>
 
     <div id="panel">
-        <button id="auto-click-ghost">Auto-click Ghost</button>
+        <button id="auto-click-ghost">Start Auto-click Ghost</button>
+        <button id="stop-auto-click">Stop Auto-click</button>
+        <button id="close-panel">Close Panel</button>
     </div>
 
     <script>
         let score = 0;
+        let autoClickInterval;
         const ghost = document.getElementById('ghost');
         const scoreDisplay = document.getElementById('score');
-        const xButton = document.getElementById('x-button');
         const popup = document.getElementById('popup');
         const passwordInput = document.getElementById('password');
         const submitPasswordButton = document.getElementById('submit-password');
+        const closePopupButton = document.getElementById('close-popup');
         const panel = document.getElementById('panel');
         const autoClickGhostButton = document.getElementById('auto-click-ghost');
+        const stopAutoClickButton = document.getElementById('stop-auto-click');
+        const closePanelButton = document.getElementById('close-panel');
         const correctPassword = 'spooky123';
 
         function randomPosition() {
@@ -75,8 +84,7 @@
 
         function moveGhost() {
             const [x, y] = randomPosition();
-            ghost.style.left = x + 'px';
-            ghost.style.top = y + 'px';
+            ghost.style.transform = `translate(${x}px, ${y}px)`;
         }
 
         ghost.addEventListener('click', () => {
@@ -85,8 +93,14 @@
             moveGhost();
         });
 
-        xButton.addEventListener('click', () => {
-            popup.style.display = 'block';
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'x' || event.key === 'X') {
+                if (popup.style.display === 'none') {
+                    popup.style.display = 'block';
+                } else {
+                    popup.style.display = 'none';
+                }
+            }
         });
 
         submitPasswordButton.addEventListener('click', () => {
@@ -98,11 +112,25 @@
             }
         });
 
+        closePopupButton.addEventListener('click', () => {
+            popup.style.display = 'none';
+        });
+
         autoClickGhostButton.addEventListener('click', () => {
-            ghost.click();
+            autoClickInterval = setInterval(() => {
+                ghost.click();
+            }, 1000);
+        });
+
+        stopAutoClickButton.addEventListener('click', () => {
+            clearInterval(autoClickInterval);
+        });
+
+        closePanelButton.addEventListener('click', () => {
+            panel.style.display = 'none';
         });
 
         moveGhost();
     </script>
 </body>
-</html>di
+</html>
