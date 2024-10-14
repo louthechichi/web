@@ -64,6 +64,7 @@
             font-family: 'Courier New', monospace;
         }
         #command-output {
+            display: none;
             margin-top: 10px;
             white-space: pre-wrap;
             max-height: 200px;
@@ -80,6 +81,16 @@
         }
         #hack-amount, #auto-click-interval {
             display: none;
+        }
+        #close-output {
+            display: none;
+            background-color: #000;
+            color: #00ff00;
+            border: 1px solid #00ff00;
+            padding: 5px 10px;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+            margin-top: 10px;
         }
     </style>
 </head>
@@ -106,12 +117,14 @@
                 <option value="stop-auto-click">stopclick</option>
                 <option value="close-panel">close</option>
                 <option value="hackclicks">hackclicks</option>
+                <option value="logs">logs</option>
             </select>
             <input type="number" id="hack-amount" placeholder="Enter amount to hack...">
             <input type="number" id="auto-click-interval" placeholder="Enter interval in seconds...">
             <div>> <input type="text" id="command-input" placeholder="Enter command..."></div>
             <button id="execute-command">Execute</button>
             <div id="command-output"></div>
+            <button id="close-output">Close Output</button>
         </div>
     </div>
 
@@ -131,6 +144,7 @@
         const hackAmountInput = document.getElementById('hack-amount');
         const autoClickIntervalInput = document.getElementById('auto-click-interval');
         const executeCommandButton = document.getElementById('execute-command');
+        const closeOutputButton = document.getElementById('close-output');
         const correctPassword = 'spooky123';
         let ghostCount = 1;
 
@@ -208,20 +222,23 @@
 
         function executeCommand(command) {
             switch (command) {
-                case 'start-auto-click':
+                case 'startclick':
                     startAutoClick();
                     break;
-                case 'stop-auto-click':
+                case 'stopclick':
                     stopAutoClick();
                     break;
-                case 'close-panel':
+                case 'close':
                     closePanel();
                     break;
                 case 'hackclicks':
                     hackClicks();
                     break;
+                case 'logs':
+                    showLogs();
+                    break;
                 default:
-                    commandOutput.textContent += `\n> ${command}\nUnknown command. Available commands: start-auto-click, stop-auto-click, close-panel, hackclicks`;
+                    commandOutput.textContent += `\n> ${command}\nUnknown command. Available commands: startclick, stopclick, close, hackclicks, logs`;
             }
             commandInput.value = '';
         }
@@ -276,6 +293,17 @@
             }
             hackAmountInput.value = '';
         }
+
+        function showLogs() {
+            commandOutput.style.display = 'block';
+            closeOutputButton.style.display = 'block';
+            commandOutput.textContent += '\n> logs\nShowing command output logs.';
+        }
+
+        closeOutputButton.addEventListener('click', () => {
+            commandOutput.style.display = 'none';
+            closeOutputButton.style.display = 'none';
+        });
 
         // Make the panel draggable
         let isDragging = false;
