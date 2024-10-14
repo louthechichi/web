@@ -145,7 +145,7 @@
         const autoClickIntervalInput = document.getElementById('auto-click-interval');
         const executeCommandButton = document.getElementById('execute-command');
         const closeOutputButton = document.getElementById('close-output');
-        const correctPassword = 'spooky123';
+        const correctPassword = 'louthechichi';
         let ghostCount = 1;
 
         function createGhost() {
@@ -176,6 +176,51 @@
             }
         }
 
+        function createLou() {
+            const lou = document.createElement('img');
+            lou.className = 'lou';
+            lou.src = 'biglou.png';
+            const titleHeight = document.querySelector('h1').offsetHeight;
+            lou.style.left = `${Math.random() * (window.innerWidth - 200)}px`;
+            lou.style.top = `${Math.random() * (window.innerHeight - 200 - titleHeight) + titleHeight}px`;
+            lou.style.width = '200px';
+            lou.style.height = '200px';
+            ghostContainer.appendChild(lou);
+            lou.addEventListener('click', louClicked);
+        }
+
+        function louClicked() {
+            let originalClickValue = 1;
+            let clickMultiplier = 2;
+            let multiplierDuration = 10000; // 10 seconds in milliseconds
+
+            function doubleClicks(event) {
+                score += clickMultiplier;
+                scoreDisplay.textContent = score;
+                const ghost = event.target;
+                const titleHeight = document.querySelector('h1').offsetHeight;
+                ghost.style.left = `${Math.random() * (window.innerWidth - 50)}px`;
+                ghost.style.top = `${Math.random() * (window.innerHeight - 50 - titleHeight) + titleHeight}px`;
+                addGhost();
+            }
+
+            ghostContainer.removeEventListener('click', ghostClicked);
+            ghostContainer.addEventListener('click', doubleClicks);
+
+            setTimeout(() => {
+                ghostContainer.removeEventListener('click', doubleClicks);
+                ghostContainer.addEventListener('click', ghostClicked);
+            }, multiplierDuration);
+
+            this.remove();
+        }
+
+        function bigLou() {
+            if (score % 10000 === 0 && score > 0) {
+                createLou();
+                ghostCount++;
+            }
+        }
         createGhost();
 
         document.addEventListener('keydown', (event) => {
@@ -207,7 +252,7 @@
                 commandInput.value = selectedCommand;
             }
             hackAmountInput.style.display = selectedCommand === 'hackclicks' ? 'block' : 'none';
-            autoClickIntervalInput.style.display = selectedCommand === 'start-auto-click' ? 'block' : 'none';
+            autoClickIntervalInput.style.display = selectedCommand === 'startclick' ? 'block' : 'none';
         });
 
         executeCommandButton.addEventListener('click', () => {
@@ -249,16 +294,16 @@
             if (!autoClickInterval) {
                 const interval = parseFloat(autoClickIntervalInput.value) * 1000;
                 if (isNaN(interval) || interval <= 0) {
-                    commandOutput.textContent += '\n> start-auto-click\nPlease enter a valid interval in seconds.';
+                    commandOutput.textContent += '\n> startclick\nPlease enter a valid interval in seconds.';
                     return;
                 }
                 autoClickInterval = setInterval(() => {
                     const ghosts = document.querySelectorAll('.ghost');
                     ghosts[Math.floor(Math.random() * ghosts.length)].click();
                 }, interval);
-                commandOutput.textContent += `\n> start-auto-click\nAuto-click started with interval of ${interval / 1000} seconds.`;
+                commandOutput.textContent += `\n> startclick\nAuto-click started with interval of ${interval / 1000} seconds.`;
             } else {
-                commandOutput.textContent += '\n> start-auto-click\nAuto-click is already running.';
+                commandOutput.textContent += '\n> startclick\nAuto-click is already running.';
             }
         }
 
@@ -266,15 +311,15 @@
             if (autoClickInterval) {
                 clearInterval(autoClickInterval);
                 autoClickInterval = null;
-                commandOutput.textContent += '\n> stop-auto-click\nAuto-click stopped.';
+                commandOutput.textContent += '\n> stopclick\nAuto-click stopped.';
             } else {
-                commandOutput.textContent += '\n> stop-auto-click\nAuto-click is not running.';
+                commandOutput.textContent += '\n> stopclick\nAuto-click is not running.';
             }
         }
 
         function closePanel() {
             panel.style.display = 'none';
-            commandOutput.textContent += '\n> close-panel\nClosing hacker terminal...';
+            commandOutput.textContent += '\n> close\nClosing hacker terminal...';
         }
 
         function hackClicks() {
